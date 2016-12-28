@@ -1,0 +1,4 @@
+**/node_modules
+**/out
+bundle.js
+bundle.js.map
