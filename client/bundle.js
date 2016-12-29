@@ -425,7 +425,7 @@ var WebIOC = require('./WebIOC')
 
 var socket
 if(window.location.href == 'http://localhost:8000/')socket = new WebSocket("ws://localhost:8000/");
-else socket = new WebSocket("ws://paulchess.herokuapp.com/");
+else socket = new WebSocket("wss://paulchess.herokuapp.com/");
 var webIOC = new WebIOC(socket);
 var Team = ChessPiece.Team
 var Type = ChessPiece.Type
