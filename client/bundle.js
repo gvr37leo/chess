@@ -111,7 +111,7 @@ class ChessBoard{
 
 module.exports = ChessBoard
 },{"./AABB":1,"./ChessPiece":3,"./utils":7,"./vector":8}],3:[function(require,module,exports){
-var Vector = require('./Vector')
+var Vector = require('./vector')
 var Utils = require('./utils')
 var AABB = require('./AABB')
 var EventHandler = require('./eventHandler')
@@ -341,7 +341,7 @@ letterMap[Type.rook] = 'R'
 ChessPiece.Type = Type
 ChessPiece.Team = Team
 module.exports = ChessPiece
-},{"./AABB":1,"./Vector":8,"./eventHandler":5,"./utils":7}],4:[function(require,module,exports){
+},{"./AABB":1,"./eventHandler":5,"./utils":7,"./vector":8}],4:[function(require,module,exports){
 class WebIOC{
     constructor(socket){
         this.socket = socket;

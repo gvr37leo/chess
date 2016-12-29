@@ -1,4 +1,4 @@
-var Vector = require('./Vector')
+var Vector = require('./vector')
 var Utils = require('./utils')
 var AABB = require('./AABB')
 var EventHandler = require('./eventHandler')
