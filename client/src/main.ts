@@ -3,7 +3,7 @@ var ctxt = canvas.getContext('2d')
 var lastUpdate = Date.now();
 var dt:number;
 var pi = Math.PI
-
+var resetBtn = document.querySelector('#resetBtn')
 
 
 import Vector = require('./Vector')
@@ -18,6 +18,7 @@ var socket = new WebSocket("ws://localhost:8000/");
 var webIOC = new WebIOC(socket);
 enum Team{Black, White}
 enum Type{pawn, rook, knight, bisshop, queen, king}
+var team:Team
 
 var canvasContainer:any = document.querySelector('#canvas-container')
 canvas.width = canvasContainer.offsetWidth - 3
@@ -25,28 +26,7 @@ canvas.height = canvasContainer.offsetHeight - 3
 
 
 var chessBoard = new ChessBoard();
-// initChessBoard();
-// function initChessBoard(){
-//     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(2, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.king, Team.Black, new Vector(4, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(5, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(6, 0), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(7, 0), chessBoard))
-//     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.Black, new Vector(x, 1), chessBoard))
 
-//     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(0, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(2, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.king, Team.White, new Vector(4, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(5, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(6, 7), chessBoard))
-//     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(7, 7), chessBoard))
-//     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.White, new Vector(x, 6), chessBoard))
-// }
 
 
 
@@ -62,13 +42,15 @@ setInterval(function(){
 
 chessBoard.draw(ctxt)
 
-// EventHandler.subscribe('gameOver', (c:ChessPiece)=>{
-//     chessBoard = new ChessBoard()
-//     initChessBoard()
-// })
+
+resetBtn.addEventListener('click', () =>{
+    webIOC.send('reset', {})
+})
 
 webIOC.on('update', (data)=>{
-    chessBoard = ChessBoard.deserialize(data)
+    chessBoard = ChessBoard.deserialize(data.chessBoard)
+    team = data.team
+    chessBoard.draw(ctxt)
 })
 
 document.onmousedown = (evt) => {
@@ -89,10 +71,10 @@ document.onmousedown = (evt) => {
             if(piece && piece.team == chessBoard.turn)chessBoard.selected = piece
             else{
                 var from = chessBoard.selected.pos.c()
-                if(chessBoard.selected.tryMove(v)){
+                if(chessBoard.selected.isLegalMove(v)){
                     webIOC.send('move', {
                         from:from.serialize(),
-                        to:chessBoard.selected.pos.serialize()
+                        to:v.serialize()
                     })
                 }
                 chessBoard.selected = null;

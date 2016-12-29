@@ -53,15 +53,16 @@ class ChessBoard{
     serialize():any{
         var grid = Utils.create2dArray(this.size, null)
         this.size.loop((v) => {
-            grid[v.x][v.y] = this.grid[v.x][v.y].serialize()
+            if(this.grid[v.x][v.y])grid[v.x][v.y] = this.grid[v.x][v.y].serialize()
         })
-
+        var selected;
+        if(this.selected)selected = this.selected.serialize()
         var serialized = {
             size:this.size.serialize(),
             squareSize:this.squareSize.serialize(),
             grid:grid,
             turn:this.turn,
-            selected:this.selected.serialize()
+            selected:selected
         }
         return serialized
     }
@@ -70,11 +71,11 @@ class ChessBoard{
         var chessBoard = new ChessBoard()
         var grid = Utils.create2dArray<ChessPiece>(chessBoard.size, null)
         chessBoard.size.loop((v) => {
-            grid[v.x][v.y] = ChessPiece.deserialize(object.grid[v.x][v.y], chessBoard)
+            if(object.grid[v.x][v.y])grid[v.x][v.y] = ChessPiece.deserialize(object.grid[v.x][v.y], chessBoard)
         })
         chessBoard.grid = grid
         chessBoard.turn = object.turn
-        chessBoard.selected = ChessPiece.deserialize(object.selected, chessBoard)
+        if(object.selected)chessBoard.selected = ChessPiece.deserialize(object.selected, chessBoard)
         return chessBoard
     }
 }

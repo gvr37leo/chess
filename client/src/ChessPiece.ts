@@ -53,9 +53,13 @@ class ChessPiece{
             
             if(this.chessBoard.turn == Team.Black)this.chessBoard.turn = Team.White
             else this.chessBoard.turn = Team.Black
-            
+            return true
         }
         return false
+    }
+
+    isLegalMove(v:Vector):boolean{
+        return this.posChecker(this, this.chessBoard)[v.x][v.y]
     }
 
     serialize(){

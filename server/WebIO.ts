@@ -1,8 +1,10 @@
 import * as ws from 'ws'
+enum Team{Black, White}
 
 export default class WebIO{
     socket:ws
     routeMap
+    team:Team
 
     constructor(socket:ws){
         this.socket = socket;
@@ -15,6 +17,10 @@ export default class WebIO{
             }else{
                 console.log('404: ' + parsedData.route);
             }
+        }
+
+        this.socket.onclose = () =>{
+            this.onclose();
         }
     }
 
@@ -29,7 +35,7 @@ export default class WebIO{
         }
     }
 
-    onclose(){
+    onclose(){//only here so that calls to it dont cause nullpointer exceptions
 
     }
 
