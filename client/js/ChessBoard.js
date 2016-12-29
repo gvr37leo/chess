@@ -8,6 +8,7 @@ class ChessBoard{
 
     constructor(){
         this.lastMove = null;
+        this.lastMoveTo = null;
         this.size = new Vector(8,8)
         this.squareSize = new Vector(50, 50)
         this.turn = Team.White
@@ -30,6 +31,9 @@ class ChessBoard{
             
             if(this.lastMove && v.equals(this.lastMove)){
                 ctxt.fillStyle = "#404"
+            }
+            if(this.lastMoveTo && v.equals(this.lastMoveTo)){
+                ctxt.fillStyle = "#a0a"
             }
             if(this.selected && legalsSpots[v.x][v.y])ctxt.fillStyle = "#f00"
             ctxt.fillRect(v.x * this.squareSize.x + offset.x, v.y * this.squareSize.y + offset.y, this.squareSize.x, this.squareSize.y)
@@ -59,13 +63,16 @@ class ChessBoard{
         if(this.selected)selected = this.selected.serialize()
         var lastMove;
         if(this.lastMove)lastMove = this.lastMove.serialize()
+        var lastMoveTo;
+        if(this.lastMoveTo)lastMoveTo = this.lastMoveTo.serialize()
         var serialized = {
             size:this.size.serialize(),
             squareSize:this.squareSize.serialize(),
             grid:grid,
             turn:this.turn,
             selected:selected,
-            lastMove:lastMove
+            lastMove:lastMove,
+            lastMoveTo:lastMoveTo
         }
         return serialized
     }
@@ -79,6 +86,7 @@ class ChessBoard{
         chessBoard.grid = grid
         chessBoard.turn = object.turn
         if(object.lastMove)chessBoard.lastMove = Vector.deserialize(object.lastMove)
+        if(object.lastMoveTo)chessBoard.lastMoveTo = Vector.deserialize(object.lastMoveTo)
         if(object.selected)chessBoard.selected = ChessPiece.deserialize(object.selected, chessBoard)
         return chessBoard
     }

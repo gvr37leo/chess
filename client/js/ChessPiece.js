@@ -53,6 +53,7 @@ class ChessPiece{
             if(piece && piece.type == Type.king) EventHandler.trigger('gameOver', piece)
             this.chessBoard.grid[v.x][v.y] = this;
             this.chessBoard.grid[this.pos.x][this.pos.y] = null;
+            this.chessBoard.lastMoveTo = v.c()
             this.pos = v;
             this.moved = true;
             
