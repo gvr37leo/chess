@@ -4,21 +4,12 @@ var path = require('path')
 var http = require('http')
 var WebIO = require('./WebIO')
 
-var ChessBoard = require('./out/client/src/ChessBoard')
-var ChessPiece = require('./out/client/src/ChessPiece')
-var Vector = require('./out/client/src/Vector')
-var EventHandler = require('./out/client/src/EventHandler')
-
-var Team = {}
-Team[Team["Black"] = 0] = "Black";
-Team[Team["White"] = 1] = "White";
-var Type = {}
-Type[Type["pawn"] = 0] = "pawn";
-Type[Type["rook"] = 1] = "rook";
-Type[Type["knight"] = 2] = "knight";
-Type[Type["bisshop"] = 3] = "bisshop";
-Type[Type["queen"] = 4] = "queen";
-Type[Type["king"] = 5] = "king";
+var ChessBoard = require('../client/js/ChessBoard')
+var ChessPiece = require('../client/js/ChessPiece')
+var Vector = require('../client/js/Vector')
+var EventHandler = require('../client/js/EventHandler')
+var Team = ChessPiece.Team
+var Type = ChessPiece.Type
 
 var server = http.createServer()
 var wss = new Server({server:server})
@@ -77,7 +68,7 @@ function updateClients(){
     if(player2)player2.send('update', {chessBoard:c, team:player2.team})
 }
 
-app.use('/', express.static(path.join(__dirname, '../../../client')))//typescript kinda fucks this up
+app.use('/', express.static(path.join(__dirname, '../client')))//typescript kinda fucks this up
 
 server.on('request', app)
 server.listen(port, () =>{

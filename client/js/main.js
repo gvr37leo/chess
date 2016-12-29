@@ -1,27 +1,26 @@
-var canvas = <HTMLCanvasElement> document.getElementById('canvas')
+var canvas = document.getElementById('canvas')
 var ctxt = canvas.getContext('2d')
 var lastUpdate = Date.now();
-var dt:number;
+var dt;
 var pi = Math.PI
 var resetBtn = document.querySelector('#resetBtn')
 var teamLabel = document.querySelector('#teamLabel')
 var turnLabel = document.querySelector('#turnLabel')
 
-import Vector = require('./Vector')
-import Utils = require('./utils')
-import EventHandler = require('./eventHandler')
-import ChessPiece = require('./ChessPiece')
-import ChessBoard = require('./ChessBoard')
-import AABB = require('./AABB')
-import WebIOC = require('./WebIOC')
+var Vector = require('./Vector')
+var Utils = require('./utils')
+var EventHandler = require('./eventHandler')
+var ChessPiece = require('./ChessPiece')
+var ChessBoard = require('./ChessBoard')
+var AABB = require('./AABB')
+var WebIOC = require('./WebIOC')
 
 var socket = new WebSocket("ws://localhost:8000/");
 var webIOC = new WebIOC(socket);
-enum Team{Black, White}
-enum Type{pawn, rook, knight, bisshop, queen, king}
-var team:Team
-
-var canvasContainer:any = document.querySelector('#canvas-container')
+var Team = ChessPiece.Team
+var Type = ChessPiece.Type
+var team
+var canvasContainer = document.querySelector('#canvas-container')
 canvas.width = canvasContainer.offsetWidth - 3
 canvas.height = canvasContainer.offsetHeight - 100
 
@@ -90,7 +89,7 @@ function draw(){
     //ctxt.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function getMousePos(canvas, evt):Vector {
+function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return new Vector(evt.clientX - rect.left, evt.clientY - rect.top)
 }

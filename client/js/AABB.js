@@ -1,15 +1,12 @@
-import Vector = require('./vector')
-import Utils = require('./utils')
+var Vector = require('./vector')
+var Utils = require('./utils')
 class AABB{
-    pos:Vector
-    size:Vector
-
-    constructor(pos:Vector, size:Vector){
+    constructor(pos, size){
         this.pos = pos;
         this.size = size;
     }
 
-    static fromVectors(a:Vector[]):AABB{
+    static fromVectors(a){
         var small = a[0];
         var big = a[a.length - 1];
         for(var v of a){
@@ -21,14 +18,14 @@ class AABB{
         return new AABB(small, big.sub(small));
     }
 
-    contains(aabb:AABB){
+    contains(aabb){
         return Utils.rangeContain(this.pos.x, this.size.x + this.pos.x, aabb.pos.x, aabb.size.x + aabb.pos.x) 
         && Utils.rangeContain(this.pos.y, this.size.y + this.pos.y, aabb.pos.y, aabb.size.y + aabb.pos.y)
     }
 
-    collide(v:Vector):boolean{
+    collide(v){
         return Utils.inRange(this.pos.x, this.size.x + this.pos.x, v.x) && Utils.inRange(this.pos.y, this.size.y + this.pos.y, v.y)
     }
 }
 
-export = AABB
+module.exports = AABB

@@ -1,8 +1,5 @@
 class WebIOC{
-    socket:WebSocket
-    routeMap
-
-    constructor(socket:WebSocket){
+    constructor(socket){
         this.socket = socket;
         this.routeMap = {};
         this.socket.onmessage = (event) => {
@@ -36,4 +33,4 @@ class WebIOC{
     }
 }
 
-export = WebIOC
+module.exports = WebIOC

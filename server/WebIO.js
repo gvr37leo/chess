@@ -1,7 +1,4 @@
 var ws = require('ws')
-var Team = {}
-Team[Team["Black"] = 0] = "Black";
-Team[Team["White"] = 1] = "White";
 
 class WebIO{
     constructor(socket){
@@ -41,3 +38,5 @@ class WebIO{
         this.socket.close();
     }
 }
+
+module.exports = WebIO

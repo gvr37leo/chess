@@ -1,31 +1,26 @@
-import Vector = require('./Vector')
-import Utils = require('./utils')
-import AABB = require('./AABB')
-import ChessPiece = require('./ChessPiece')
-enum Team{Black, White}
+var Vector = require('./Vector')
+var Utils = require('./utils')
+var AABB = require('./AABB')
+var ChessPiece = require('./ChessPiece')
+var Team = ChessPiece.Team
 
 class ChessBoard{
-    size:Vector
-    squareSize:Vector
-    grid:ChessPiece[][]
-    turn:Team
-    selected:ChessPiece
 
     constructor(){
         this.size = new Vector(8,8)
         this.squareSize = new Vector(50, 50)
         this.turn = Team.White
-        this.grid = Utils.create2dArray<ChessPiece>(this.size, null);
+        this.grid = Utils.create2dArray(this.size, null);
     }
 
-    tryFromTo(from:Vector, to:Vector):boolean{
+    tryFromTo(from, to){
         var fromPiece = this.grid[from.x][from.y]//could outofrange from badclient
         return fromPiece.tryMove(to)
     }
 
-    draw(ctxt:CanvasRenderingContext2D, offset:Vector){
+    draw(ctxt, offset){
         
-        var legalsSpots:boolean[][];
+        var legalsSpots;
         if(this.selected)legalsSpots = this.selected.posChecker(this.selected, this)
         this.size.loop((v) =>{
             if((v.x + v.y) % 2 == 0)ctxt.fillStyle = "#fff"
@@ -40,18 +35,18 @@ class ChessBoard{
         })
     }
 
-    vectorToGridPos(v:Vector):Vector{
+    vectorToGridPos(v){
         var n = new Vector();
         n.x = Math.floor(v.x / this.squareSize.x)
         n.y = Math.floor(v.y / this.squareSize.y)
         return n;
     }
 
-    add(c:ChessPiece){
+    add(c){
         this.grid[c.pos.x][c.pos.y] = c;
     }
 
-    serialize():any{
+    serialize(){
         var grid = Utils.create2dArray(this.size, null)
         this.size.loop((v) => {
             if(this.grid[v.x][v.y])grid[v.x][v.y] = this.grid[v.x][v.y].serialize()
@@ -70,7 +65,7 @@ class ChessBoard{
 
     static deserialize(object){
         var chessBoard = new ChessBoard()
-        var grid = Utils.create2dArray<ChessPiece>(chessBoard.size, null)
+        var grid = Utils.create2dArray(chessBoard.size, null)
         chessBoard.size.loop((v) => {
             if(object.grid[v.x][v.y])grid[v.x][v.y] = ChessPiece.deserialize(object.grid[v.x][v.y], chessBoard)
         })
@@ -81,4 +76,4 @@ class ChessBoard{
     }
 }
 
-export = ChessBoard
+module.exports = ChessBoard
