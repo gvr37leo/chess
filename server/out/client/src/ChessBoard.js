@@ -1,6 +1,6 @@
 "use strict";
-var Vector = require('./Vector');
-var Utils = require('./utils');
+var Vector = require('./Vector.js');
+var Utils = require('./utils.js');
 var ChessPiece = require('./ChessPiece');
 var Team;
 (function (Team) {
