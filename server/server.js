@@ -4,12 +4,12 @@ var path = require('path')
 var http = require('http')
 var WebIO = require('./WebIO')
 
-var ChessBoard = require('../client/js/ChessBoard')
-var ChessPiece = require('../client/js/ChessPiece')
-var Vector = require('../client/js/Vector')
-var EventHandler = require('../client/js/EventHandler')
-var Team = ChessPiece.Team
-var Type = ChessPiece.Type
+// var ChessBoard = require('../client/js/ChessBoard')
+// var ChessPiece = require('../client/js/ChessPiece')
+// var Vector = require('../client/js/Vector')
+// var EventHandler = require('../client/js/EventHandler')
+// var Team = ChessPiece.Team
+// var Type = ChessPiece.Type
 
 var server = http.createServer()
 var wss = new Server({server:server})
@@ -17,56 +17,56 @@ var app = express();
 var port = process.env.PORT || 8000;
 var player1
 var player2
-var chessBoard = new ChessBoard()
+// var chessBoard = new ChessBoard()
 fillChessBoard(chessBoard);
 
-EventHandler.subscribe('gameOver', (c)=>{
-    chessBoard = new ChessBoard()
-    fillChessBoard(chessBoard)
-    updateClients()
-})
+// EventHandler.subscribe('gameOver', (c)=>{
+//     chessBoard = new ChessBoard()
+//     fillChessBoard(chessBoard)
+//     updateClients()
+// })
 
-wss.on('connection', (client) =>{
-    console.log('client connected')
-    var webIO = new WebIO(client);
-    if(!player1){
-        player1 = webIO
-        player1.team = Team.White
-    }
-    else if(!player2){
-        player2 = webIO
-        player2.team = Team.Black
-    }
+// wss.on('connection', (client) =>{
+//     console.log('client connected')
+//     var webIO = new WebIO(client);
+//     if(!player1){
+//         player1 = webIO
+//         player1.team = Team.White
+//     }
+//     else if(!player2){
+//         player2 = webIO
+//         player2.team = Team.Black
+//     }
     
     
-    updateClients()
+//     updateClients()
 
 
-    webIO.on('move', (data) => {
-        if(webIO.team != chessBoard.turn)return
-        var from = Vector.deserialize(data.from)
-        var to = Vector.deserialize(data.to)
-        chessBoard.tryFromTo(from, to)//returns true/false
-        updateClients()
-    })
+//     webIO.on('move', (data) => {
+//         if(webIO.team != chessBoard.turn)return
+//         var from = Vector.deserialize(data.from)
+//         var to = Vector.deserialize(data.to)
+//         chessBoard.tryFromTo(from, to)//returns true/false
+//         updateClients()
+//     })
 
-    webIO.on('reset', (data) => {
-        chessBoard = new ChessBoard()
-        fillChessBoard(chessBoard)
-        updateClients()
-    })
+//     webIO.on('reset', (data) => {
+//         chessBoard = new ChessBoard()
+//         fillChessBoard(chessBoard)
+//         updateClients()
+//     })
 
-    webIO.onclose = () =>{
-        if(player1 && player1.socket.readyState == 3)player1 = null
-        if(player2 && player2.socket.readyState == 3)player2 = null
-    }
-})
+//     webIO.onclose = () =>{
+//         if(player1 && player1.socket.readyState == 3)player1 = null
+//         if(player2 && player2.socket.readyState == 3)player2 = null
+//     }
+// })
 
-function updateClients(){
-    var c = chessBoard.serialize()
-    if(player1)player1.send('update', {chessBoard:c, team:player1.team})
-    if(player2)player2.send('update', {chessBoard:c, team:player2.team})
-}
+// function updateClients(){
+//     var c = chessBoard.serialize()
+//     if(player1)player1.send('update', {chessBoard:c, team:player1.team})
+//     if(player2)player2.send('update', {chessBoard:c, team:player2.team})
+// }
 
 app.use('/', express.static(path.join(__dirname, '../client')))//typescript kinda fucks this up
 
