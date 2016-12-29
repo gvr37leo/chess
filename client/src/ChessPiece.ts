@@ -23,7 +23,7 @@ class ChessPiece{
         
     }
 
-    draw(ctxt:CanvasRenderingContext2D, squareSize:Vector, v:Vector){
+    draw(ctxt:CanvasRenderingContext2D, squareSize:Vector, offset:Vector){
         ctxt.textAlign = 'center'
         ctxt.textBaseline = 'middle'
         ctxt.strokeStyle = '#000'
@@ -34,12 +34,12 @@ class ChessPiece{
         }
         var size = 30
         var halfsize = size / 2
-        ctxt.strokeRect(0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
-        ctxt.fillRect( 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize,  1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
+        ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
+        ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
         if(this.team == Team.Black)ctxt.fillStyle = '#fff'
         else ctxt.fillStyle = '#000'
         
-        ctxt.fillText(letterMap[this.type], this.pos.x * squareSize.x + squareSize.x / 2, this.pos.y * squareSize.y + squareSize.y / 2)
+        ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
     }
 
     tryMove(v:Vector):boolean{    

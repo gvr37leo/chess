@@ -23,7 +23,8 @@ class ChessBoard{
         return fromPiece.tryMove(to)
     }
 
-    draw(ctxt:CanvasRenderingContext2D){
+    draw(ctxt:CanvasRenderingContext2D, offset:Vector){
+        
         var legalsSpots:boolean[][];
         if(this.selected)legalsSpots = this.selected.posChecker(this.selected, this)
         this.size.loop((v) =>{
@@ -32,9 +33,9 @@ class ChessBoard{
             if(this.selected && v.equals(this.selected.pos))ctxt.fillStyle = "#0ff"
             
             if(this.selected && legalsSpots[v.x][v.y])ctxt.fillStyle = "#f00"
-            ctxt.fillRect(v.x * this.squareSize.x, v.y * this.squareSize.y, this.squareSize.x, this.squareSize.y)
+            ctxt.fillRect(v.x * this.squareSize.x + offset.x, v.y * this.squareSize.y + offset.y, this.squareSize.x, this.squareSize.y)
             if(this.grid[v.x][v.y]){
-                this.grid[v.x][v.y].draw(ctxt, this.squareSize, v)
+                this.grid[v.x][v.y].draw(ctxt, this.squareSize, offset)
             }
         })
     }

@@ -5,9 +5,16 @@
 
   <body style='width:100%; height:100%; margin:0px;'>
     <div id='canvas-container' style='width:100%; height:100%;'>
-        <canvas width="1200" height="600" ID="canvas" tabindex="0" >Canvas tag not supported</canvas>
+        <canvas width="1200" height="600" ID="canvas" tabindex="0" style="outline:none">Canvas tag not supported</canvas>
+        <div style="display: flex; justify-content: center">
+          <div style="display: flex; flex-direction: column; align-items: center">
+            <div>you are <span id='teamLabel'></span></div>
+            <div>it's <span id='turnLabel'></span>'s turn</div>
+            <button id='resetBtn'>reset</button>
+          </div>
+        </div>
     </div>
-    <button id='resetBtn'>reset</button>
+    
 
     <script src="require.js"></script>
     <script src="bundle.js"></script>

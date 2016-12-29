@@ -56,8 +56,8 @@ wss.on('connection', (client) =>{
     })
 
     webIO.onclose = () =>{
-        if(player1.socket.readyState == 3)player1 = null
-        if(player2.socket.readyState == 3)player2 = null
+        if(player1 && player1.socket.readyState == 3)player1 = null
+        if(player2 && player2.socket.readyState == 3)player2 = null
     }
 })
 

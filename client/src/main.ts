@@ -4,7 +4,8 @@ var lastUpdate = Date.now();
 var dt:number;
 var pi = Math.PI
 var resetBtn = document.querySelector('#resetBtn')
-
+var teamLabel = document.querySelector('#teamLabel')
+var turnLabel = document.querySelector('#turnLabel')
 
 import Vector = require('./Vector')
 import Utils = require('./utils')
@@ -22,13 +23,9 @@ var team:Team
 
 var canvasContainer:any = document.querySelector('#canvas-container')
 canvas.width = canvasContainer.offsetWidth - 3
-canvas.height = canvasContainer.offsetHeight - 3
-
+canvas.height = canvasContainer.offsetHeight - 100
 
 var chessBoard = new ChessBoard();
-
-
-
 
 setInterval(function(){
     var now = Date.now();
@@ -39,8 +36,9 @@ setInterval(function(){
     draw();
     
 }, 1000 / 60);
-
-chessBoard.draw(ctxt)
+var halfsize = chessBoard.size.x * chessBoard.squareSize.x / 2
+var offset = new Vector(Math.floor(canvas.width / 2 - halfsize), Math.floor(canvas.height / 2 - halfsize))
+chessBoard.draw(ctxt, offset)
 
 
 resetBtn.addEventListener('click', () =>{
@@ -50,12 +48,14 @@ resetBtn.addEventListener('click', () =>{
 webIOC.on('update', (data)=>{
     chessBoard = ChessBoard.deserialize(data.chessBoard)
     team = data.team
-    chessBoard.draw(ctxt)
+    teamLabel.innerHTML = Team[team]
+    turnLabel.innerHTML = Team[chessBoard.turn]
+    chessBoard.draw(ctxt, offset)
 })
 
 document.onmousedown = (evt) => {
     var aabb = new AABB(new Vector(), chessBoard.size.c().sub(new Vector(1,1)))
-    var v = chessBoard.vectorToGridPos(getMousePos(canvas, evt))
+    var v = chessBoard.vectorToGridPos(getMousePos(canvas, evt).sub(offset))
     
     
     if(!aabb.collide(v)){
@@ -64,16 +64,15 @@ document.onmousedown = (evt) => {
         var piece = chessBoard.grid[v.x][v.y]
 
         if(chessBoard.selected == null){
-            if(piece && piece.team == chessBoard.turn){
+            if(piece && piece.team == chessBoard.turn && piece.team == team){
                 chessBoard.selected = piece
             }
         }else{
             if(piece && piece.team == chessBoard.turn)chessBoard.selected = piece
             else{
-                var from = chessBoard.selected.pos.c()
                 if(chessBoard.selected.isLegalMove(v)){
                     webIOC.send('move', {
-                        from:from.serialize(),
+                        from:chessBoard.selected.pos.serialize(),
                         to:v.serialize()
                     })
                 }
@@ -81,7 +80,7 @@ document.onmousedown = (evt) => {
             }
         }
     }
-    chessBoard.draw(ctxt)
+    chessBoard.draw(ctxt, offset)
 }
 
 function update(){
