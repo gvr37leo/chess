@@ -48,12 +48,14 @@ class ChessPiece{
 
     tryMove(v){    
         if(this.posChecker(this, this.chessBoard)[v.x][v.y]){
+            this.chessBoard.lastMove = this.pos.c()
             var piece = this.chessBoard.grid[v.x][v.y]
             if(piece && piece.type == Type.king) EventHandler.trigger('gameOver', piece)
             this.chessBoard.grid[v.x][v.y] = this;
             this.chessBoard.grid[this.pos.x][this.pos.y] = null;
             this.pos = v;
             this.moved = true;
+            
             
             if(this.chessBoard.turn == Team.Black)this.chessBoard.turn = Team.White
             else this.chessBoard.turn = Team.Black

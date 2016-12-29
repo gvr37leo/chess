@@ -4,7 +4,7 @@
   "description": "multiplayer chess",
   "scripts": {
     "start": "node server/server.js",
-    "transpile":"watchify client/js/main.js -o ./client/bundle.js "
+    "transpile":"watchify client/js/main.js -o ./client/bundle.js -d"
   },
   "author": "paul boon",
   "license": "ISC",
