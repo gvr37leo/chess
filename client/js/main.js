@@ -15,9 +15,9 @@ var ChessBoard = require('./ChessBoard')
 var AABB = require('./AABB')
 var WebIOC = require('./WebIOC')
 
-var socket;
-if(window.location.href == 'http://localhost:8000/')socket = new WebSocket("localhost:8000");
-else socket = new WebSocket("https://paulchess.herokuapp.com/");
+var socket
+if(window.location.href == 'http://localhost:8000/')socket = new WebSocket("ws://localhost:8000/");
+else socket = new WebSocket("ws://paulchess.herokuapp.com/");
 var webIOC = new WebIOC(socket);
 var Team = ChessPiece.Team
 var Type = ChessPiece.Type
