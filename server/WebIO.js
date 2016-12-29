@@ -1,12 +1,10 @@
-import * as ws from 'ws'
-enum Team{Black, White}
+var ws = require('ws')
+var Team = {}
+Team[Team["Black"] = 0] = "Black";
+Team[Team["White"] = 1] = "White";
 
-export default class WebIO{
-    socket:ws
-    routeMap
-    team:Team
-
-    constructor(socket:ws){
+class WebIO{
+    constructor(socket){
         this.socket = socket;
         this.routeMap = {};
         this.socket.onmessage = (event) => {
@@ -24,11 +22,11 @@ export default class WebIO{
         }
     }
 
-    on(route:string, action){//actions need to be passed using an arrow function or functions binded with .bind(this)
+    on(route, action){//actions need to be passed using an arrow function or functions binded with .bind(this)
         this.routeMap[route] = action;
     }
 
-    send(route:string, value){//value is object en geserialized
+    send(route, value){//value is object en geserialized
         value.route = route;
         if(this.socket.readyState==1){
           this.socket.send(JSON.stringify(value));

@@ -1,25 +1,35 @@
-import * as express from 'express'
-import {Server} from 'ws'
-import * as path from 'path'
-import * as http from 'http'
-import WebIO from './WebIO'
-import ChessBoard = require('../client/src/ChessBoard')
-import ChessPiece = require('../client/src/ChessPiece')
-import Vector = require('../client/src/vector')
-import EventHandler = require('../client/src/EventHandler')
-enum Team{Black, White}
-enum Type{pawn, rook, knight, bisshop, queen, king}
+var express = require('express')
+var Server = require('ws').Server
+var path = require('path')
+var http = require('http')
+var WebIO = require('./WebIO')
+
+var ChessBoard = require('./out/client/src/ChessBoard')
+var ChessPiece = require('./out/client/src/ChessPiece')
+var Vector = require('./out/client/src/Vector')
+var EventHandler = require('./out/client/src/EventHandler')
+
+var Team = {}
+Team[Team["Black"] = 0] = "Black";
+Team[Team["White"] = 1] = "White";
+var Type = {}
+Type[Type["pawn"] = 0] = "pawn";
+Type[Type["rook"] = 1] = "rook";
+Type[Type["knight"] = 2] = "knight";
+Type[Type["bisshop"] = 3] = "bisshop";
+Type[Type["queen"] = 4] = "queen";
+Type[Type["king"] = 5] = "king";
 
 var server = http.createServer()
 var wss = new Server({server:server})
 var app = express();
 var port = process.env.PORT || 8000;
-var player1:WebIO
-var player2:WebIO
+var player1
+var player2
 var chessBoard = new ChessBoard()
 fillChessBoard(chessBoard);
 
-EventHandler.subscribe('gameOver', (c:ChessPiece)=>{
+EventHandler.subscribe('gameOver', (c)=>{
     chessBoard = new ChessBoard()
     fillChessBoard(chessBoard)
     updateClients()
@@ -74,7 +84,7 @@ server.listen(port, () =>{
     console.log('listening on ' + port)
 })
 
-function fillChessBoard(chessBoard:ChessBoard){
+function fillChessBoard(chessBoard){
     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(2, 0), chessBoard))

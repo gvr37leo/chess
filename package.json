@@ -1,11 +1,11 @@
 {
   "name": "chess",
   "version": "1.0.0",
-  "description": "",
+  "description": "multiplayer chess",
   "scripts": {
-    "start": "node server/out/server/server.js"
+    "start": "node server/server.js"
   },
-  "author": "",
+  "author": "paul boon",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.0.34",
