@@ -18,7 +18,7 @@ var port = process.env.PORT || 8000;
 var player1
 var player2
 // var chessBoard = new ChessBoard()
-fillChessBoard(chessBoard);
+// fillChessBoard(chessBoard);
 
 // EventHandler.subscribe('gameOver', (c)=>{
 //     chessBoard = new ChessBoard()
@@ -75,24 +75,24 @@ server.listen(port, () =>{
     console.log('listening on ' + port)
 })
 
-function fillChessBoard(chessBoard){
-    chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(2, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.king, Team.Black, new Vector(4, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(5, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(6, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(7, 0), chessBoard))
-    for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.Black, new Vector(x, 1), chessBoard))
+// function fillChessBoard(chessBoard){
+//     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(2, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.king, Team.Black, new Vector(4, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(5, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(6, 0), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(7, 0), chessBoard))
+//     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.Black, new Vector(x, 1), chessBoard))
 
-    chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(0, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(2, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.king, Team.White, new Vector(4, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(5, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(6, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(7, 7), chessBoard))
-    for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.White, new Vector(x, 6), chessBoard))
-}
+//     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(0, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(2, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.king, Team.White, new Vector(4, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(5, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(6, 7), chessBoard))
+//     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(7, 7), chessBoard))
+//     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.White, new Vector(x, 6), chessBoard))
+// }
