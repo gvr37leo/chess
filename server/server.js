@@ -4,14 +4,14 @@ var path = require('path')
 var http = require('http')
 var WebIO = require('./WebIO')
 
-var Vector = require('../client/js/vector')
-// var ChessBoard = require('../client/js/ChessBoard')
+// var Vector = require('../client/js/vector')
+var ChessBoard = require('../client/js/ChessBoard')
 // var ChessPiece = require('../client/js/ChessPiece')
 // var Vector = require('../client/js/Vector')
 // var EventHandler = require('../client/js/EventHandler')
 // var Team = ChessPiece.Team
 // var Type = ChessPiece.Type
-var vector = new Vector(1,1)
+// var vector = new Vector(1,1)
 console.log(vector)
 var server = http.createServer()
 var wss = new Server({server:server})

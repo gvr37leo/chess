@@ -31,7 +31,7 @@ class AABB{
 
 module.exports = AABB
 },{"./utils":7,"./vector":8}],2:[function(require,module,exports){
-var Vector = require('./Vector')
+var Vector = require('./vector')
 var Utils = require('./utils')
 var AABB = require('./AABB')
 var ChessPiece = require('./ChessPiece')
@@ -110,7 +110,7 @@ class ChessBoard{
 }
 
 module.exports = ChessBoard
-},{"./AABB":1,"./ChessPiece":3,"./Vector":8,"./utils":7}],3:[function(require,module,exports){
+},{"./AABB":1,"./ChessPiece":3,"./utils":7,"./vector":8}],3:[function(require,module,exports){
 var Vector = require('./Vector')
 var Utils = require('./utils')
 var AABB = require('./AABB')
