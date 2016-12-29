@@ -27,7 +27,7 @@ canvas.width = canvasContainer.offsetWidth - 3
 canvas.height = canvasContainer.offsetHeight - 100
 
 var chessBoard = new ChessBoard();
-
+//asda
 setInterval(function(){
     var now = Date.now();
     dt = (now - lastUpdate) / 1000;
