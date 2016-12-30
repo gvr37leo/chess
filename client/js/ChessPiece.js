@@ -11,13 +11,20 @@ var Type = {}
 Type[Type["pawn"] = 0] = "pawn"; 
 Type[Type["rook"] = 1] = "rook"; 
 Type[Type["knight"] = 2] = "knight"; 
-Type[Type["bisshop"] = 3] = "bisshop"; 
+Type[Type["bishop"] = 3] = "bishop"; 
 Type[Type["queen"] = 4] = "queen"; 
 Type[Type["king"] = 5] = "king"; 
 
 class ChessPiece{
     
     constructor(type, team, pos, chessBoard){
+        if(typeof document != 'undefined'){
+            if(team == Team.Black)this.image = imageMapB[Type[type]]
+            else this.image = imageMapW[Type[type]]
+        }
+        
+        
+
         this.moved = false
         this.pos = pos
         this.chessBoard = chessBoard
@@ -36,14 +43,16 @@ class ChessPiece{
             ctxt.strokeStyle = '#fff'
             ctxt.fillStyle = '#000'
         }
-        var size = 30
+        var size = this.chessBoard.squareSize.x
         var halfsize = size / 2
-        ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
-        ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
-        if(this.team == Team.Black)ctxt.fillStyle = '#fff'
-        else ctxt.fillStyle = '#000'
+
+        ctxt.drawImage(this.image, offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
+        // ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
+        // ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
+        // if(this.team == Team.Black)ctxt.fillStyle = '#fff'
+        // else ctxt.fillStyle = '#000'
         
-        ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
+        // ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
     }
 
     tryMove(v){    
@@ -94,11 +103,12 @@ checkMap.set(Type.pawn, function(c, board){
     if(c.team == Team.White)facing = new Vector(0, -1)
     else facing = new Vector(0, 1)
     var wsfront = c.pos.c().add(facing)
-    if(aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null)moves.push(facing)
-
-    var farFront = facing.c().scale(2)
-    var wsFarFront = c.pos.c().add(farFront)
-    if(!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)moves.push(farFront)
+    if(aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null){
+        moves.push(facing)
+        var farFront = facing.c().scale(2)
+        var wsFarFront = c.pos.c().add(farFront)
+        if(!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)moves.push(farFront)
+    }
 
     var west = new Vector(1,0).add(facing)
     var wswest = west.c().add(c.pos)
@@ -135,7 +145,7 @@ checkMap.set(Type.knight, function(c, grid){
     return movesStamp(moves, c);
 })
 
-checkMap.set(Type.bisshop, function(c, grid){
+checkMap.set(Type.bishop, function(c, grid){
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -220,8 +230,29 @@ function movesStamp(moves, c){
     return opens
 }
 
+
+var imageMapB = {}
+var imageMapW = {}
+if(typeof document != 'undefined'){
+    var types = ['pawn', 'rook', 'bishop', 'queen', 'king', 'knight']
+    for(var type of types){
+        var imageB = new Image()
+        var imageW = new Image()
+        imageB.src = 'resources/b' + type + '.png'
+        imageW.src = 'resources/w' + type + '.png'
+        imageB.onload = () => {
+            EventHandler.trigger('imageLoaded', {})
+        }
+        imageW.onload = () => {
+            EventHandler.trigger('imageLoaded', {})
+        }
+        imageMapB[type] = imageB
+        imageMapW[type] = imageW
+    }
+}
+
 var letterMap = []
-letterMap[Type.bisshop] = 'B'
+letterMap[Type.bishop] = 'B'
 letterMap[Type.king] = 'K'
 letterMap[Type.knight] = 'H'
 letterMap[Type.pawn] = 'P'

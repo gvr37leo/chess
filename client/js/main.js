@@ -26,6 +26,14 @@ var canvasContainer = document.querySelector('#canvas-container')
 canvas.width = canvasContainer.offsetWidth - 3
 canvas.height = canvasContainer.offsetHeight - 100
 
+var imageLoadCounter = 0;
+EventHandler.subscribe('imageLoaded', (data) =>{
+    imageLoadCounter++;
+    if(imageLoadCounter >= 12){
+        chessBoard.draw(ctxt, offset)
+    }
+})
+
 var chessBoard = new ChessBoard();
 //asda
 setInterval(function(){
