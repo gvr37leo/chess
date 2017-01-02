@@ -36,40 +36,46 @@ class ChessPiece{
     }
 
     draw(ctxt:CanvasRenderingContext2D, squareSize:Vector, offset:Vector){
-        // ctxt.textAlign = 'center'
-        // ctxt.textBaseline = 'middle'
-        // ctxt.strokeStyle = '#000'
-        // ctxt.fillStyle = '#fff'
-        // if(this.team == Team.Black){
-        //     ctxt.strokeStyle = '#fff'
-        //     ctxt.fillStyle = '#000'
-        // }
         var size = this.chessBoard.squareSize.x 
         var halfsize = size / 2
         ctxt.drawImage(this.image, offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size) 
-
-        // ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
-        // ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
-        // if(this.team == Team.Black)ctxt.fillStyle = '#fff'
-        // else ctxt.fillStyle = '#000'
-        
-        // ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
     }
 
-    tryMove(v:Vector):boolean{    
-        if(this.posChecker(this, this.chessBoard)[v.x][v.y]){
-            var piece = this.chessBoard.grid[v.x][v.y]
+    tryMove(to:Vector):boolean{    
+        if(this.posChecker(this, this.chessBoard)[to.x][to.y]){
+            var fromTO = to.c().sub(this.pos)
+            if(this.type == Type.king && fromTO.length() == 2){//check if castling occured
+                fromTO.normalize()
+                var rook = getPieceInDirection(this.pos, fromTO, Type.rook, this.chessBoard)
+                rook.move(this.pos.c().add(fromTO))//assumes rook has been found because posChecker saw this as a legal move
+
+            }
+
+            var piece = this.chessBoard.grid[to.x][to.y]//check if hit piece is king
             if(piece && piece.type == Type.king) EventHandler.trigger('gameOver', piece)
-            this.chessBoard.grid[v.x][v.y] = this;
-            this.chessBoard.grid[this.pos.x][this.pos.y] = null;
-            this.pos = v;
-            this.moved = true;
+
+            this.move(to)
+
+            if(this.type == Type.pawn){//check for pawn promotion, atm always promotes to queen
+                if(this.team == Team.Black && this.pos.y == this.chessBoard.size.y - 1
+                || this.team == Team.White && this.pos.y == 0){
+                    this.type = Type.queen
+                    this.posChecker = checkMap.get(Type.queen)
+                }
+            }
             
-            if(this.chessBoard.turn == Team.Black)this.chessBoard.turn = Team.White
+            if(this.chessBoard.turn == Team.Black)this.chessBoard.turn = Team.White//switch turn
             else this.chessBoard.turn = Team.Black
             return true
         }
         return false
+    }
+
+    move(to:Vector){
+        this.chessBoard.grid[to.x][to.y] = this;//move this piece to requested spot
+        this.chessBoard.grid[this.pos.x][this.pos.y] = null;
+        this.pos = to;
+        this.moved = true;
     }
 
     isLegalMove(v:Vector):boolean{
@@ -179,7 +185,38 @@ checkMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
         new Vector(-1, 0),
         new Vector(-1, 1),
     ]
-    return movesStamp(moves, c);
+    var legalMoves = movesStamp(moves, c);
+    
+    if(!c.moved){//castling
+        var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1,1)))
+        var opens = Utils.create2dArray<boolean>(c.chessBoard.size, false)
+        var rookDirections = [
+            new Vector(1, 0),
+            new Vector(-1, 0),
+            new Vector(0, 1),
+            new Vector(0, -1)
+        ]
+        for(var direction of rookDirections){
+            var currentCheckingPos = c.pos.c();
+            while(true){
+                currentCheckingPos.add(direction)
+                if(aabb.collide(currentCheckingPos)){
+                    var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y]
+                    if(piece == null)continue
+                    else{
+                        if(piece.team == c.team && piece.type == Type.rook && !piece.moved){
+                            var jumpPos = c.pos.c().add(direction.c().scale(2))
+                            legalMoves[jumpPos.x][jumpPos.y] = true
+                        }else break
+                    }
+                    
+                }else break
+            }
+        }
+    }
+
+    return legalMoves
+    
 })
 
 function filterMovesOffBoard(moves:Vector[], size:Vector, pos:Vector):Vector[]{
@@ -227,6 +264,18 @@ function movesStamp(moves:Vector[], c:ChessPiece):boolean[][]{
         }
     }
     return opens
+}
+
+function getPieceInDirection(from:Vector, direction:Vector, type:Type, chessBoard:ChessBoard):ChessPiece{
+    var aabb = new AABB(new Vector(), chessBoard.size.c().sub(new Vector(1,1)))
+    var currentCheckingPos = from.c()
+    while(true){
+        currentCheckingPos.add(direction)
+        if(aabb.collide(currentCheckingPos)){
+            var piece = chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y]
+            if(piece && piece.type == type)return piece
+        }else break
+    }
 }
 
 var imageMapB = {} 

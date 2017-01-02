@@ -76,9 +76,9 @@ server.listen(port, () =>{
 
 function fillChessBoard(chessBoard:ChessBoard){
     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bishop, Team.Black, new Vector(2, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.bishop, Team.Black, new Vector(2, 0), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.king, Team.Black, new Vector(4, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.bishop, Team.Black, new Vector(5, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(6, 0), chessBoard))
@@ -86,9 +86,9 @@ function fillChessBoard(chessBoard:ChessBoard){
     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.Black, new Vector(x, 1), chessBoard))
 
     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(0, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bishop, Team.White, new Vector(2, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.bishop, Team.White, new Vector(2, 7), chessBoard))
+    // chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.king, Team.White, new Vector(4, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.bishop, Team.White, new Vector(5, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(6, 7), chessBoard))

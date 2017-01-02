@@ -44,6 +44,8 @@ var ChessBoard = (function () {
         n.y = Math.floor(v.y / this.squareSize.y);
         return n;
     };
+    ChessBoard.prototype.isInCheck = function () {
+    };
     ChessBoard.prototype.add = function (c) {
         this.grid[c.pos.x][c.pos.y] = c;
     };
