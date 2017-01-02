@@ -47,10 +47,6 @@ class ChessBoard{
         return n;
     }
 
-    isInCheck(){
-        
-    }
-
     add(c:ChessPiece){
         this.grid[c.pos.x][c.pos.y] = c;
     }
