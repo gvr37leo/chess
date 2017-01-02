@@ -9,6 +9,8 @@ var Team;
 })(Team || (Team = {}));
 var ChessBoard = (function () {
     function ChessBoard() {
+        this.lastMoveTo = null;
+        this.lastMoveFrom = null;
         this.size = new Vector(8, 8);
         this.squareSize = new Vector(50, 50);
         this.turn = Team.White;
@@ -30,6 +32,10 @@ var ChessBoard = (function () {
                 ctxt.fillStyle = "#000";
             if (_this.selected && v.equals(_this.selected.pos))
                 ctxt.fillStyle = "#0ff";
+            if (_this.lastMoveFrom && v.equals(_this.lastMoveFrom))
+                ctxt.fillStyle = "#404";
+            if (_this.lastMoveTo && v.equals(_this.lastMoveTo))
+                ctxt.fillStyle = "#a0a";
             if (_this.selected && legalsSpots[v.x][v.y])
                 ctxt.fillStyle = "#f00";
             ctxt.fillRect(v.x * _this.squareSize.x + offset.x, v.y * _this.squareSize.y + offset.y, _this.squareSize.x, _this.squareSize.y);
@@ -57,12 +63,20 @@ var ChessBoard = (function () {
         var selected;
         if (this.selected)
             selected = this.selected.serialize();
+        var lastMoveFrom;
+        if (this.lastMoveFrom)
+            lastMoveFrom = this.lastMoveFrom.serialize();
+        var lastMoveTo;
+        if (this.lastMoveTo)
+            lastMoveTo = this.lastMoveTo.serialize();
         var serialized = {
             size: this.size.serialize(),
             squareSize: this.squareSize.serialize(),
             grid: grid,
             turn: this.turn,
-            selected: selected
+            selected: selected,
+            lastMoveFrom: lastMoveFrom,
+            lastMoveTo: lastMoveTo
         };
         return serialized;
     };
@@ -77,6 +91,10 @@ var ChessBoard = (function () {
         chessBoard.turn = object.turn;
         if (object.selected)
             chessBoard.selected = ChessPiece.deserialize(object.selected, chessBoard);
+        if (object.lastMoveFrom)
+            chessBoard.lastMoveFrom = Vector.deserialize(object.lastMoveFrom);
+        if (object.lastMoveTo)
+            chessBoard.lastMoveTo = Vector.deserialize(object.lastMoveTo);
         return chessBoard;
     };
     return ChessBoard;

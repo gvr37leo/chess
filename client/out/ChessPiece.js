@@ -39,6 +39,8 @@ var ChessPiece = (function () {
     };
     ChessPiece.prototype.tryMove = function (to) {
         if (this.posChecker(this, this.chessBoard)[to.x][to.y]) {
+            this.chessBoard.lastMoveFrom = this.pos.c();
+            this.chessBoard.lastMoveTo = to.c();
             var fromTO = to.c().sub(this.pos);
             if (this.type == Type.king && fromTO.length() == 2) {
                 fromTO.normalize();
