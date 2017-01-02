@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "run"
+    "start": "node server/out/server/server.js",
+    "batch": "run"
   },
   "author": "",
   "license": "ISC",
