@@ -15,7 +15,9 @@ import ChessBoard = require('./ChessBoard')
 import AABB = require('./AABB')
 import WebIOC = require('./WebIOC')
 
-var socket = new WebSocket("ws://localhost:8000/");
+var socket
+if(window.location.href == 'http://localhost:8000/')socket = new WebSocket("ws://localhost:8000/");
+else socket = new WebSocket("wss://paulchess.herokuapp.com/");
 var webIOC = new WebIOC(socket);
 enum Team{Black, White}
 enum Type{pawn, rook, knight, bishop, queen, king}
