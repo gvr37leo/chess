@@ -6,7 +6,7 @@ import WebIO from './WebIO'
 import ChessBoard = require('../client/src/ChessBoard')
 import ChessPiece = require('../client/src/ChessPiece')
 import Vector = require('../client/src/vector')
-import EventHandler = require('../client/src/EventHandler')
+import EventHandler = require('../client/src/eventHandler')
 enum Team{Black, White}
 enum Type{pawn, rook, knight, bishop, queen, king}
 
