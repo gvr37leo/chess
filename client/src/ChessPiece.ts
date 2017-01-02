@@ -6,6 +6,12 @@ import EventHandler = require('./eventHandler')
 enum Team{Black, White}
 enum Type{pawn, rook, knight, bisshop, queen, king}
 
+declare class Map<K,V>{
+    constructor()
+    get(a:K):V
+    set(a:K, b:V)
+}
+
 class ChessPiece{
     type:Type
     pos:Vector

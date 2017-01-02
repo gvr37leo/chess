@@ -1,7 +1,13 @@
+declare class Map<K,V>{
+    constructor()
+    get(a:K):V
+    set(a:K, b:V)
+}
+
 class EventHandler{
 
     private static instance:EventHandler
-    private static eventMap:Map<string, ((any?) => any)[]> = new Map();
+    private static eventMap:Map<string, ((any?) => any)[]> = new Map<string, ((any?) => any)[]>();
 
     
 
