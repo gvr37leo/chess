@@ -8,7 +8,7 @@ import ChessPiece = require('../client/src/ChessPiece')
 import Vector = require('../client/src/vector')
 import EventHandler = require('../client/src/EventHandler')
 enum Team{Black, White}
-enum Type{pawn, rook, knight, bisshop, queen, king}
+enum Type{pawn, rook, knight, bishop, queen, king}
 
 var server = http.createServer()
 var wss = new Server({server:server})
@@ -77,20 +77,20 @@ server.listen(port, () =>{
 function fillChessBoard(chessBoard:ChessBoard){
     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(0, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(1, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(2, 0), chessBoard))
+    chessBoard.add(new ChessPiece(Type.bishop, Team.Black, new Vector(2, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.queen, Team.Black, new Vector(3, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.king, Team.Black, new Vector(4, 0), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.Black, new Vector(5, 0), chessBoard))
+    chessBoard.add(new ChessPiece(Type.bishop, Team.Black, new Vector(5, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.Black, new Vector(6, 0), chessBoard))
     chessBoard.add(new ChessPiece(Type.rook, Team.Black, new Vector(7, 0), chessBoard))
     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.Black, new Vector(x, 1), chessBoard))
 
     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(0, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(1, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(2, 7), chessBoard))
+    chessBoard.add(new ChessPiece(Type.bishop, Team.White, new Vector(2, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.queen, Team.White, new Vector(3, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.king, Team.White, new Vector(4, 7), chessBoard))
-    chessBoard.add(new ChessPiece(Type.bisshop, Team.White, new Vector(5, 7), chessBoard))
+    chessBoard.add(new ChessPiece(Type.bishop, Team.White, new Vector(5, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.knight, Team.White, new Vector(6, 7), chessBoard))
     chessBoard.add(new ChessPiece(Type.rook, Team.White, new Vector(7, 7), chessBoard))
     for(var x = 0; x < 8; x++)chessBoard.add(new ChessPiece(Type.pawn, Team.White, new Vector(x, 6), chessBoard))

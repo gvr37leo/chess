@@ -1,4 +1,4 @@
-import Vector = require('./Vector')
+import Vector = require('./vector')
 import Utils = require('./utils')
 import AABB = require('./AABB')
 import ChessPiece = require('./ChessPiece')

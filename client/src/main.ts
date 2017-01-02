@@ -7,7 +7,7 @@ var resetBtn = document.querySelector('#resetBtn')
 var teamLabel = document.querySelector('#teamLabel')
 var turnLabel = document.querySelector('#turnLabel')
 
-import Vector = require('./Vector')
+import Vector = require('./vector')
 import Utils = require('./utils')
 import EventHandler = require('./eventHandler')
 import ChessPiece = require('./ChessPiece')
@@ -18,12 +18,20 @@ import WebIOC = require('./WebIOC')
 var socket = new WebSocket("ws://localhost:8000/");
 var webIOC = new WebIOC(socket);
 enum Team{Black, White}
-enum Type{pawn, rook, knight, bisshop, queen, king}
+enum Type{pawn, rook, knight, bishop, queen, king}
 var team:Team
 
 var canvasContainer:any = document.querySelector('#canvas-container')
 canvas.width = canvasContainer.offsetWidth - 3
 canvas.height = canvasContainer.offsetHeight - 100
+
+var imageLoadCounter = 0; 
+EventHandler.subscribe('imageLoaded', (data) =>{ 
+    imageLoadCounter++; 
+    if(imageLoadCounter >= 12){ 
+        chessBoard.draw(ctxt, offset) 
+    } 
+}) 
 
 var chessBoard = new ChessBoard();
 

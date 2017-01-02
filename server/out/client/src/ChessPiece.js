@@ -1,5 +1,5 @@
 "use strict";
-var Vector = require('./Vector');
+var Vector = require('./vector');
 var Utils = require('./utils');
 var AABB = require('./AABB');
 var EventHandler = require('./eventHandler');
@@ -13,13 +13,19 @@ var Type;
     Type[Type["pawn"] = 0] = "pawn";
     Type[Type["rook"] = 1] = "rook";
     Type[Type["knight"] = 2] = "knight";
-    Type[Type["bisshop"] = 3] = "bisshop";
+    Type[Type["bishop"] = 3] = "bishop";
     Type[Type["queen"] = 4] = "queen";
     Type[Type["king"] = 5] = "king";
 })(Type || (Type = {}));
 var ChessPiece = (function () {
     function ChessPiece(type, team, pos, chessBoard) {
         this.moved = false;
+        if (typeof document != 'undefined') {
+            if (team == Team.Black)
+                this.image = imageMapB[Type[type]];
+            else
+                this.image = imageMapW[Type[type]];
+        }
         this.pos = pos;
         this.chessBoard = chessBoard;
         this.posChecker = checkMap.get(type);
@@ -27,23 +33,22 @@ var ChessPiece = (function () {
         this.team = team;
     }
     ChessPiece.prototype.draw = function (ctxt, squareSize, offset) {
-        ctxt.textAlign = 'center';
-        ctxt.textBaseline = 'middle';
-        ctxt.strokeStyle = '#000';
-        ctxt.fillStyle = '#fff';
-        if (this.team == Team.Black) {
-            ctxt.strokeStyle = '#fff';
-            ctxt.fillStyle = '#000';
-        }
-        var size = 30;
+        // ctxt.textAlign = 'center'
+        // ctxt.textBaseline = 'middle'
+        // ctxt.strokeStyle = '#000'
+        // ctxt.fillStyle = '#fff'
+        // if(this.team == Team.Black){
+        //     ctxt.strokeStyle = '#fff'
+        //     ctxt.fillStyle = '#000'
+        // }
+        var size = this.chessBoard.squareSize.x;
         var halfsize = size / 2;
-        ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size);
-        ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1);
-        if (this.team == Team.Black)
-            ctxt.fillStyle = '#fff';
-        else
-            ctxt.fillStyle = '#000';
-        ctxt.fillText(letterMap[this.type], offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2);
+        ctxt.drawImage(this.image, offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size);
+        // ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
+        // ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
+        // if(this.team == Team.Black)ctxt.fillStyle = '#fff'
+        // else ctxt.fillStyle = '#000'
+        // ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
     };
     ChessPiece.prototype.tryMove = function (v) {
         if (this.posChecker(this, this.chessBoard)[v.x][v.y]) {
@@ -90,12 +95,13 @@ checkMap.set(Type.pawn, function (c, board) {
     else
         facing = new Vector(0, 1);
     var wsfront = c.pos.c().add(facing);
-    if (aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null)
+    if (aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null) {
         moves.push(facing);
-    var farFront = facing.c().scale(2);
-    var wsFarFront = c.pos.c().add(farFront);
-    if (!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)
-        moves.push(farFront);
+        var farFront = facing.c().scale(2);
+        var wsFarFront = c.pos.c().add(farFront);
+        if (!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)
+            moves.push(farFront);
+    }
     var west = new Vector(1, 0).add(facing);
     var wswest = west.c().add(c.pos);
     if (aabb.collide(wswest) && board.grid[wswest.x][wswest.y] != null && board.grid[wswest.x][wswest.y].team != c.team)
@@ -128,7 +134,7 @@ checkMap.set(Type.knight, function (c, grid) {
     ];
     return movesStamp(moves, c);
 });
-checkMap.set(Type.bisshop, function (c, grid) {
+checkMap.set(Type.bishop, function (c, grid) {
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -213,8 +219,28 @@ function movesStamp(moves, c) {
     }
     return opens;
 }
+var imageMapB = {};
+var imageMapW = {};
+if (typeof document != 'undefined') {
+    var types = ['pawn', 'rook', 'bishop', 'queen', 'king', 'knight'];
+    for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
+        var type = types_1[_i];
+        var imageB = new Image();
+        var imageW = new Image();
+        imageB.src = 'resources/b' + type + '.png';
+        imageW.src = 'resources/w' + type + '.png';
+        imageB.onload = function () {
+            EventHandler.trigger('imageLoaded', {});
+        };
+        imageW.onload = function () {
+            EventHandler.trigger('imageLoaded', {});
+        };
+        imageMapB[type] = imageB;
+        imageMapW[type] = imageW;
+    }
+}
 var letterMap = [];
-letterMap[Type.bisshop] = 'B';
+letterMap[Type.bishop] = 'B';
 letterMap[Type.king] = 'K';
 letterMap[Type.knight] = 'H';
 letterMap[Type.pawn] = 'P';

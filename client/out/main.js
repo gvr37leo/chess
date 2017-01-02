@@ -7,8 +7,9 @@ var pi = Math.PI;
 var resetBtn = document.querySelector('#resetBtn');
 var teamLabel = document.querySelector('#teamLabel');
 var turnLabel = document.querySelector('#turnLabel');
-var Vector = require('./Vector');
+var Vector = require('./vector');
 var Utils = require('./utils');
+var EventHandler = require('./eventHandler');
 var ChessBoard = require('./ChessBoard');
 var AABB = require('./AABB');
 var WebIOC = require('./WebIOC');
@@ -24,7 +25,7 @@ var Type;
     Type[Type["pawn"] = 0] = "pawn";
     Type[Type["rook"] = 1] = "rook";
     Type[Type["knight"] = 2] = "knight";
-    Type[Type["bisshop"] = 3] = "bisshop";
+    Type[Type["bishop"] = 3] = "bishop";
     Type[Type["queen"] = 4] = "queen";
     Type[Type["king"] = 5] = "king";
 })(Type || (Type = {}));
@@ -32,6 +33,13 @@ var team;
 var canvasContainer = document.querySelector('#canvas-container');
 canvas.width = canvasContainer.offsetWidth - 3;
 canvas.height = canvasContainer.offsetHeight - 100;
+var imageLoadCounter = 0;
+EventHandler.subscribe('imageLoaded', function (data) {
+    imageLoadCounter++;
+    if (imageLoadCounter >= 12) {
+        chessBoard.draw(ctxt, offset);
+    }
+});
 var chessBoard = new ChessBoard();
 setInterval(function () {
     var now = Date.now();

@@ -1,10 +1,10 @@
-import Vector = require('./Vector')
+import Vector = require('./vector')
 import Utils = require('./utils')
 import ChessBoard = require('./ChessBoard')
 import AABB = require('./AABB')
 import EventHandler = require('./eventHandler')
 enum Team{Black, White}
-enum Type{pawn, rook, knight, bisshop, queen, king}
+enum Type{pawn, rook, knight, bishop, queen, king}
 
 declare class Map<K,V>{
     constructor()
@@ -18,9 +18,15 @@ class ChessPiece{
     team:Team
     chessBoard:ChessBoard
     moved:boolean = false
+    image:HTMLImageElement
     posChecker:(c:ChessPiece, chessBoard:ChessBoard) => boolean[][]
     
     constructor(type:Type, team:Team, pos:Vector, chessBoard:ChessBoard){
+        if(typeof document != 'undefined'){ 
+            if(team == Team.Black)this.image = imageMapB[Type[type]] 
+            else this.image = imageMapW[Type[type]] 
+        }
+
         this.pos = pos
         this.chessBoard = chessBoard
         this.posChecker = checkMap.get(type)
@@ -30,22 +36,24 @@ class ChessPiece{
     }
 
     draw(ctxt:CanvasRenderingContext2D, squareSize:Vector, offset:Vector){
-        ctxt.textAlign = 'center'
-        ctxt.textBaseline = 'middle'
-        ctxt.strokeStyle = '#000'
-        ctxt.fillStyle = '#fff'
-        if(this.team == Team.Black){
-            ctxt.strokeStyle = '#fff'
-            ctxt.fillStyle = '#000'
-        }
-        var size = 30
+        // ctxt.textAlign = 'center'
+        // ctxt.textBaseline = 'middle'
+        // ctxt.strokeStyle = '#000'
+        // ctxt.fillStyle = '#fff'
+        // if(this.team == Team.Black){
+        //     ctxt.strokeStyle = '#fff'
+        //     ctxt.fillStyle = '#000'
+        // }
+        var size = this.chessBoard.squareSize.x 
         var halfsize = size / 2
-        ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
-        ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
-        if(this.team == Team.Black)ctxt.fillStyle = '#fff'
-        else ctxt.fillStyle = '#000'
+        ctxt.drawImage(this.image, offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size) 
+
+        // ctxt.strokeRect(offset.x + 0.5 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 0.5 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size, size)
+        // ctxt.fillRect(offset.x + 1 + this.pos.x * squareSize.x + squareSize.x / 2 - halfsize, offset.y + 1 + this.pos.y * squareSize.y + squareSize.y / 2 - halfsize, size - 1, size - 1)
+        // if(this.team == Team.Black)ctxt.fillStyle = '#fff'
+        // else ctxt.fillStyle = '#000'
         
-        ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
+        // ctxt.fillText(letterMap[this.type],offset.x + this.pos.x * squareSize.x + squareSize.x / 2, offset.y + this.pos.y * squareSize.y + squareSize.y / 2)
     }
 
     tryMove(v:Vector):boolean{    
@@ -93,11 +101,13 @@ checkMap.set(Type.pawn, function(c:ChessPiece, board:ChessBoard):boolean[][]{
     if(c.team == Team.White)facing = new Vector(0, -1)
     else facing = new Vector(0, 1)
     var wsfront = c.pos.c().add(facing)
-    if(aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null)moves.push(facing)
 
-    var farFront = facing.c().scale(2)
-    var wsFarFront = c.pos.c().add(farFront)
-    if(!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)moves.push(farFront)
+    if(aabb.collide(wsfront) && board.grid[wsfront.x][wsfront.y] == null){ 
+        moves.push(facing) 
+        var farFront = facing.c().scale(2) 
+        var wsFarFront = c.pos.c().add(farFront) 
+        if(!c.moved && aabb.collide(wsFarFront) && board.grid[wsFarFront.x][wsFarFront.y] == null)moves.push(farFront) 
+    } 
 
     var west = new Vector(1,0).add(facing)
     var wswest = west.c().add(c.pos)
@@ -134,7 +144,7 @@ checkMap.set(Type.knight, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     return movesStamp(moves, c);
 })
 
-checkMap.set(Type.bisshop, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
+checkMap.set(Type.bishop, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -219,8 +229,28 @@ function movesStamp(moves:Vector[], c:ChessPiece):boolean[][]{
     return opens
 }
 
+var imageMapB = {} 
+var imageMapW = {} 
+if(typeof document != 'undefined'){ 
+    var types = ['pawn', 'rook', 'bishop', 'queen', 'king', 'knight'] 
+    for(var type of types){ 
+        var imageB = new Image() 
+        var imageW = new Image() 
+        imageB.src = 'resources/b' + type + '.png' 
+        imageW.src = 'resources/w' + type + '.png' 
+        imageB.onload = () => { 
+            EventHandler.trigger('imageLoaded', {}) 
+        } 
+        imageW.onload = () => { 
+            EventHandler.trigger('imageLoaded', {}) 
+        } 
+        imageMapB[type] = imageB 
+        imageMapW[type] = imageW 
+    } 
+} 
+
 var letterMap = []
-letterMap[Type.bisshop] = 'B'
+letterMap[Type.bishop] = 'B'
 letterMap[Type.king] = 'K'
 letterMap[Type.knight] = 'H'
 letterMap[Type.pawn] = 'P'
