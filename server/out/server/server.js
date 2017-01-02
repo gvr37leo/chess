@@ -7,7 +7,7 @@ var WebIO_1 = require('./WebIO');
 var ChessBoard = require('../client/src/ChessBoard');
 var ChessPiece = require('../client/src/ChessPiece');
 var Vector = require('../client/src/vector');
-var EventHandler = require('../client/src/EventHandler');
+var EventHandler = require('../client/src/eventHandler');
 var Team;
 (function (Team) {
     Team[Team["Black"] = 0] = "Black";
