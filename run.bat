@@ -1,7 +1,6 @@
 @echo off
 pushd client
-start tsc
-start watchify out/main.js -o bundle.js -d
+start watchify src/main.ts --debug -p [ tsify ] -o bundle.js
 popd
 
 pushd server
