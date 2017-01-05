@@ -1,4 +1,5 @@
 "use strict";
+var Vector = require('./vector');
 var utils;
 (function (utils) {
     function map(val1, start1, stop1, start2, stop2) {
@@ -45,6 +46,11 @@ var utils;
         return rows;
     }
     utils.create2dArray = create2dArray;
+    function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return new Vector(evt.clientX - rect.left, evt.clientY - rect.top);
+    }
+    utils.getMousePos = getMousePos;
 })(utils || (utils = {}));
 module.exports = utils;
 //# sourceMappingURL=utils.js.map

@@ -1,6 +1,6 @@
 "use strict";
 var Vector = require('./vector');
-var Utils = require('./utils');
+var utils = require('./utils');
 var AABB = require('./AABB');
 var EventHandler = require('./eventHandler');
 var Team;
@@ -28,7 +28,7 @@ var ChessPiece = (function () {
         }
         this.pos = pos;
         this.chessBoard = chessBoard;
-        this.posChecker = checkMap.get(type);
+        this.posChecker = legalMoveMap.get(type);
         this.type = type;
         this.team = team;
     }
@@ -55,7 +55,7 @@ var ChessPiece = (function () {
                 if (this.team == Team.Black && this.pos.y == this.chessBoard.size.y - 1
                     || this.team == Team.White && this.pos.y == 0) {
                     this.type = Type.queen;
-                    this.posChecker = checkMap.get(Type.queen);
+                    this.posChecker = legalMoveMap.get(Type.queen);
                 }
             }
             if (this.chessBoard.turn == Team.Black)
@@ -90,8 +90,8 @@ var ChessPiece = (function () {
     };
     return ChessPiece;
 }());
-var checkMap = new Map();
-checkMap.set(Type.pawn, function (c, board) {
+var legalMoveMap = new Map();
+legalMoveMap.set(Type.pawn, function (c, board) {
     var aabb = new AABB(new Vector(), board.size.c().sub(new Vector(1, 1)));
     var moves = [];
     var facing;
@@ -117,7 +117,7 @@ checkMap.set(Type.pawn, function (c, board) {
         moves.push(east);
     return movesStamp(moves, c);
 });
-checkMap.set(Type.rook, function (c, grid) {
+legalMoveMap.set(Type.rook, function (c, grid) {
     var directions = [
         new Vector(1, 0),
         new Vector(-1, 0),
@@ -126,7 +126,7 @@ checkMap.set(Type.rook, function (c, grid) {
     ];
     return directionStamp(directions, c);
 });
-checkMap.set(Type.knight, function (c, grid) {
+legalMoveMap.set(Type.knight, function (c, grid) {
     var moves = [
         new Vector(1, -2),
         new Vector(2, -1),
@@ -139,7 +139,7 @@ checkMap.set(Type.knight, function (c, grid) {
     ];
     return movesStamp(moves, c);
 });
-checkMap.set(Type.bishop, function (c, grid) {
+legalMoveMap.set(Type.bishop, function (c, grid) {
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -148,7 +148,7 @@ checkMap.set(Type.bishop, function (c, grid) {
     ];
     return directionStamp(directions, c);
 });
-checkMap.set(Type.queen, function (c) {
+legalMoveMap.set(Type.queen, function (c) {
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -161,7 +161,7 @@ checkMap.set(Type.queen, function (c) {
     ];
     return directionStamp(directions, c);
 });
-checkMap.set(Type.king, function (c, grid) {
+legalMoveMap.set(Type.king, function (c, grid) {
     var moves = [
         new Vector(0, 1),
         new Vector(1, 1),
@@ -174,8 +174,7 @@ checkMap.set(Type.king, function (c, grid) {
     ];
     var legalMoves = movesStamp(moves, c);
     if (!c.moved) {
-        var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1, 1)));
-        var opens = Utils.create2dArray(c.chessBoard.size, false);
+        var opens = utils.create2dArray(c.chessBoard.size, false);
         var rookDirections = [
             new Vector(1, 0),
             new Vector(-1, 0),
@@ -187,7 +186,7 @@ checkMap.set(Type.king, function (c, grid) {
             var currentCheckingPos = c.pos.c();
             while (true) {
                 currentCheckingPos.add(direction);
-                if (aabb.collide(currentCheckingPos)) {
+                if (c.chessBoard.AABB.collide(currentCheckingPos)) {
                     var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y];
                     if (piece == null)
                         continue;
@@ -207,55 +206,39 @@ checkMap.set(Type.king, function (c, grid) {
     }
     return legalMoves;
 });
-function filterMovesOffBoard(moves, size, pos) {
-    var legalMoves = [];
-    var aabb = new AABB(new Vector(), size.c().sub(new Vector(1, 1)));
-    for (var _i = 0, moves_1 = moves; _i < moves_1.length; _i++) {
-        var move = moves_1[_i];
-        var ws = move.c().add(pos);
-        if (aabb.collide(ws))
-            legalMoves.push(move);
+function directionStamp(directions, c) {
+    var legalMoves = utils.create2dArray(c.chessBoard.size, false);
+    for (var _i = 0, directions_1 = directions; _i < directions_1.length; _i++) {
+        var direction = directions_1[_i];
+        var ws = c.pos.c();
+        ws.add(direction);
+        while (isLegal(c, ws)) {
+            legalMoves[ws.x][ws.y] = true;
+            if (c.chessBoard.grid[ws.x][ws.y])
+                break;
+            ws.add(direction);
+        }
     }
     return legalMoves;
 }
-function directionStamp(directions, c) {
-    var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1, 1)));
-    var opens = Utils.create2dArray(c.chessBoard.size, false);
-    for (var _i = 0, directions_1 = directions; _i < directions_1.length; _i++) {
-        var direction = directions_1[_i];
-        var currentCheckingPos = c.pos.c();
-        while (true) {
-            currentCheckingPos.add(direction);
-            if (aabb.collide(currentCheckingPos)) {
-                var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y];
-                if (piece == null)
-                    opens[currentCheckingPos.x][currentCheckingPos.y] = true;
-                else {
-                    if (piece.team != c.team)
-                        opens[currentCheckingPos.x][currentCheckingPos.y] = true;
-                    break; //break in both cases (if/else statement both break)
-                }
-            }
-            else
-                break;
-        }
-    }
-    return opens;
-}
 function movesStamp(moves, c) {
-    var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1, 1)));
-    var opens = Utils.create2dArray(c.chessBoard.size, false);
-    for (var _i = 0, moves_2 = moves; _i < moves_2.length; _i++) {
-        var move = moves_2[_i];
-        var currentCheckingPos = c.pos.c();
-        currentCheckingPos.add(move);
-        if (aabb.collide(currentCheckingPos)) {
-            var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y];
-            if (piece == null || piece.team != c.team)
-                opens[currentCheckingPos.x][currentCheckingPos.y] = true;
+    var legalMoves = utils.create2dArray(c.chessBoard.size, false);
+    for (var _i = 0, moves_1 = moves; _i < moves_1.length; _i++) {
+        var move = moves_1[_i];
+        var ws = move.c().add(c.pos);
+        if (isLegal(c, ws))
+            legalMoves[ws.x][ws.y] = true;
+    }
+    return legalMoves;
+}
+function isLegal(c, ws) {
+    if (c.chessBoard.AABB.collide(ws)) {
+        var piece = c.chessBoard.grid[ws.x][ws.y];
+        if (piece && piece.team != c.team || !piece) {
+            return true;
         }
     }
-    return opens;
+    return false;
 }
 function getPieceInDirection(from, direction, type, chessBoard) {
     var aabb = new AABB(new Vector(), chessBoard.size.c().sub(new Vector(1, 1)));
@@ -291,12 +274,5 @@ if (typeof document != 'undefined') {
         imageMapW[type] = imageW;
     }
 }
-var letterMap = [];
-letterMap[Type.bishop] = 'B';
-letterMap[Type.king] = 'K';
-letterMap[Type.knight] = 'H';
-letterMap[Type.pawn] = 'P';
-letterMap[Type.queen] = 'Q';
-letterMap[Type.rook] = 'R';
 module.exports = ChessPiece;
 //# sourceMappingURL=ChessPiece.js.map

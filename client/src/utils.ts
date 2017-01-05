@@ -43,7 +43,10 @@ namespace utils{
         return rows;
     }
 
-    
+    export function getMousePos(canvas:HTMLCanvasElement, evt:MouseEvent):Vector {
+        var rect = canvas.getBoundingClientRect();
+        return new Vector(evt.clientX - rect.left, evt.clientY - rect.top)
+    }
 }
 
 export = utils;

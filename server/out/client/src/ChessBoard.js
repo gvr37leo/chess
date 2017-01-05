@@ -1,6 +1,7 @@
 "use strict";
 var Vector = require('./vector');
 var Utils = require('./utils');
+var AABB = require('./AABB');
 var ChessPiece = require('./ChessPiece');
 var Team;
 (function (Team) {
@@ -12,6 +13,7 @@ var ChessBoard = (function () {
         this.lastMoveTo = null;
         this.lastMoveFrom = null;
         this.size = new Vector(8, 8);
+        this.AABB = new AABB(new Vector(), this.size.c().sub(new Vector(1, 1)));
         this.squareSize = new Vector(50, 50);
         this.turn = Team.White;
         this.grid = Utils.create2dArray(this.size, null);

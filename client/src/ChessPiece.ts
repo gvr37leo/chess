@@ -1,5 +1,5 @@
 import Vector = require('./vector')
-import Utils = require('./utils')
+import utils = require('./utils')
 import ChessBoard = require('./ChessBoard')
 import AABB = require('./AABB')
 import EventHandler = require('./eventHandler')
@@ -29,7 +29,7 @@ class ChessPiece{
 
         this.pos = pos
         this.chessBoard = chessBoard
-        this.posChecker = checkMap.get(type)
+        this.posChecker = legalMoveMap.get(type)
         this.type = type
         this.team = team
         
@@ -62,7 +62,7 @@ class ChessPiece{
                 if(this.team == Team.Black && this.pos.y == this.chessBoard.size.y - 1
                 || this.team == Team.White && this.pos.y == 0){
                     this.type = Type.queen
-                    this.posChecker = checkMap.get(Type.queen)
+                    this.posChecker = legalMoveMap.get(Type.queen)
                 }
             }
             
@@ -100,9 +100,9 @@ class ChessPiece{
     }
 }
 
-var checkMap = new Map<Type, (c:ChessPiece, chessBoard:ChessBoard) => boolean[][]>();
+var legalMoveMap = new Map<Type, (c:ChessPiece, chessBoard:ChessBoard) => boolean[][]>();
 
-checkMap.set(Type.pawn, function(c:ChessPiece, board:ChessBoard):boolean[][]{
+legalMoveMap.set(Type.pawn, function(c:ChessPiece, board:ChessBoard):boolean[][]{
     var aabb = new AABB(new Vector(), board.size.c().sub(new Vector(1,1)))
     var moves:Vector[] = [];
     var facing:Vector;
@@ -128,7 +128,7 @@ checkMap.set(Type.pawn, function(c:ChessPiece, board:ChessBoard):boolean[][]{
     return movesStamp(moves, c);
 })
 
-checkMap.set(Type.rook, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
+legalMoveMap.set(Type.rook, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var directions = [
         new Vector(1, 0),
         new Vector(-1, 0),
@@ -138,7 +138,7 @@ checkMap.set(Type.rook, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     return directionStamp(directions, c);
 })
 
-checkMap.set(Type.knight, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
+legalMoveMap.set(Type.knight, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var moves = [
         new Vector(1, -2),
         new Vector(2, -1),
@@ -152,7 +152,7 @@ checkMap.set(Type.knight, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     return movesStamp(moves, c);
 })
 
-checkMap.set(Type.bishop, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
+legalMoveMap.set(Type.bishop, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -162,7 +162,7 @@ checkMap.set(Type.bishop, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     return directionStamp(directions, c);
 })
 
-checkMap.set(Type.queen, function(c:ChessPiece):boolean[][]{
+legalMoveMap.set(Type.queen, function(c:ChessPiece):boolean[][]{
     var directions = [
         new Vector(1, 1),
         new Vector(-1, -1),
@@ -176,7 +176,7 @@ checkMap.set(Type.queen, function(c:ChessPiece):boolean[][]{
     return directionStamp(directions, c);
 })
 
-checkMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
+legalMoveMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var moves = [
         new Vector(0, 1),
         new Vector(1, 1),
@@ -190,8 +190,7 @@ checkMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     var legalMoves = movesStamp(moves, c);
     
     if(!c.moved){//castling
-        var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1,1)))
-        var opens = Utils.create2dArray<boolean>(c.chessBoard.size, false)
+        var opens = utils.create2dArray<boolean>(c.chessBoard.size, false)
         var rookDirections = [
             new Vector(1, 0),
             new Vector(-1, 0),
@@ -202,7 +201,7 @@ checkMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
             var currentCheckingPos = c.pos.c();
             while(true){
                 currentCheckingPos.add(direction)
-                if(aabb.collide(currentCheckingPos)){
+                if(c.chessBoard.AABB.collide(currentCheckingPos)){
                     var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y]
                     if(piece == null)continue
                     else{
@@ -221,51 +220,37 @@ checkMap.set(Type.king, function(c:ChessPiece, grid:ChessBoard):boolean[][]{
     
 })
 
-function filterMovesOffBoard(moves:Vector[], size:Vector, pos:Vector):Vector[]{
-    var legalMoves:Vector[] = [];
-    var aabb = new AABB(new Vector(), size.c().sub(new Vector(1, 1)))
-
-    for(var move of moves){
-        var ws = move.c().add(pos)
-        if(aabb.collide(ws))legalMoves.push(move)
+function directionStamp(directions:Vector[], c:ChessPiece):boolean[][]{
+    var legalMoves = utils.create2dArray(c.chessBoard.size, false)
+    for(var direction of directions){
+        var ws = c.pos.c()
+        ws.add(direction)
+        while(isLegal(c, ws)){
+            legalMoves[ws.x][ws.y] = true
+            if(c.chessBoard.grid[ws.x][ws.y])break
+            ws.add(direction)
+        }
     }
-
     return legalMoves;
 }
 
-function directionStamp(directions:Vector[], c:ChessPiece):boolean[][]{
-    var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1,1)))
-    var opens = Utils.create2dArray<boolean>(c.chessBoard.size, false)
-    for(var direction of directions){
-        var currentCheckingPos = c.pos.c();
-        while(true){
-            currentCheckingPos.add(direction)
-            if(aabb.collide(currentCheckingPos)){
-                var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y]
-                if(piece == null)opens[currentCheckingPos.x][currentCheckingPos.y] = true
-                else{
-                    if(piece.team != c.team)opens[currentCheckingPos.x][currentCheckingPos.y] = true
-                    break//break in both cases (if/else statement both break)
-                }
-            }else break
-        }
+function movesStamp(moves:Vector[], c:ChessPiece):boolean[][]{
+    var legalMoves = utils.create2dArray(c.chessBoard.size, false)
+    for(var move of moves){
+        var ws = move.c().add(c.pos)
+        if(isLegal(c, ws))legalMoves[ws.x][ws.y] = true
     }
-    return opens;
+    return legalMoves;
 }
 
-function movesStamp(moves:Vector[], c:ChessPiece):boolean[][]{
-    var aabb = new AABB(new Vector(), c.chessBoard.size.c().sub(new Vector(1,1)))
-    var opens = Utils.create2dArray<boolean>(c.chessBoard.size, false)
-    for(var move of moves){
-        var currentCheckingPos = c.pos.c();
-        currentCheckingPos.add(move)
-
-        if(aabb.collide(currentCheckingPos)){
-            var piece = c.chessBoard.grid[currentCheckingPos.x][currentCheckingPos.y]
-            if(piece == null || piece.team != c.team)opens[currentCheckingPos.x][currentCheckingPos.y] = true
+function isLegal(c:ChessPiece, ws:Vector){
+    if(c.chessBoard.AABB.collide(ws)){
+        var piece = c.chessBoard.grid[ws.x][ws.y]
+        if(piece && piece.team != c.team || !piece){
+            return true
         }
     }
-    return opens
+    return false
 }
 
 function getPieceInDirection(from:Vector, direction:Vector, type:Type, chessBoard:ChessBoard):ChessPiece{
@@ -299,13 +284,5 @@ if(typeof document != 'undefined'){
         imageMapW[type] = imageW 
     } 
 } 
-
-var letterMap = []
-letterMap[Type.bishop] = 'B'
-letterMap[Type.king] = 'K'
-letterMap[Type.knight] = 'H'
-letterMap[Type.pawn] = 'P'
-letterMap[Type.queen] = 'Q'
-letterMap[Type.rook] = 'R'
 
 export = ChessPiece

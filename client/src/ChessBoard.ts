@@ -12,11 +12,13 @@ class ChessBoard{
     selected:ChessPiece
     lastMoveFrom:Vector
     lastMoveTo:Vector
+    AABB:AABB
 
     constructor(){
         this.lastMoveTo = null; 
         this.lastMoveFrom = null; 
         this.size = new Vector(8,8)
+        this.AABB = new AABB(new Vector(), this.size.c().sub(new Vector(1, 1)))
         this.squareSize = new Vector(50, 50)
         this.turn = Team.White
         this.grid = Utils.create2dArray<ChessPiece>(this.size, null);
